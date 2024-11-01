@@ -1,0 +1,7 @@
+D:\Progects\Figaro\bin\Debug\Figaro.exe.config
+D:\Progects\Figaro\bin\Debug\Figaro.exe
+D:\Progects\Figaro\bin\Debug\Figaro.pdb
+D:\Progects\Figaro\obj\Debug\Figaro.csproj.AssemblyReference.cache
+D:\Progects\Figaro\obj\Debug\Figaro.csproj.CoreCompileInputs.cache
+D:\Progects\Figaro\obj\Debug\Figaro.exe
+D:\Progects\Figaro\obj\Debug\Figaro.pdb

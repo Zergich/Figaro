@@ -28,6 +28,14 @@ namespace Figaro
 
             return ResutlHEX;
         }
+        static string GetHexInByte(byte[] filebyte)
+        {
+            string ResutlHEX = BitConverter.ToString(filebyte).Replace("-", "");
+
+            return ResutlHEX;
+        }
+        static bool notone = false; // запуск не в первый раз
+        static string filename = "";
         static void Main(string[] args)// Переделать метод под 16 ричные кода
         {
             //byte[] text = Convert.FromBase64String("U2FsdGVkX1/BPVdL8izz+oJjntyHGMkM93qHTkFmsH3EDp2oZGrJoSegg/ZttJ4E9qAQ4qrpzpQZt6zI8srmNg==");
@@ -49,17 +57,25 @@ namespace Figaro
             }
             try
             {
+                filename = args[0];
                 switch (args[1])
                 {
                     case "-ef": File.WriteAllText(args[0], XorEncrypt(GetHEX(args[0]))); break;
                     case "-t": Console.WriteLine(XorEncrypt(args[0])); break; // шифровать строку 
                     case "-td": Console.WriteLine(XorDecrypt(args[0])); ; break; // дешифрует файл
-                    case "-df": File.WriteAllBytes(args[0], XorDecrypt(GetHEX(args[0]))); break;
+                    case "-df":
+                        if (!notone)
+                        {
+                            NormalDatat = File.ReadAllBytes(args[0]);
+                            notone = true;
+                        }
+                        File.WriteAllBytes(args[0], XorDecrypt(GetHEX(args[0])));
+                        NormalData(args[0]); break;
 
                     default: Console.WriteLine("Файл не обнаружен или неверный аргумент."); break;
                 }
             }
-            catch { Console.WriteLine("Не удалось найти файл"); }
+            catch (Exception e) { Console.WriteLine("Не удалось найти файл"); Console.WriteLine(e); }
 
             //errpass:
             //    Console.Write("Пароль: ");
@@ -78,6 +94,32 @@ namespace Figaro
 
 
             //    string strKey = Hash(password);
+        }
+        static byte[] NormalDatat = new byte[] { };
+        static int Lengtharray = 0;
+        static int live = 1; // число ошибок
+
+        static void NormalData(string args)
+        {
+        revers:
+            Console.Write("Вас устраивает результат y/n? ");
+            switch(Console.ReadLine().ToLower())
+            {
+                case "y": break;
+                case "n":
+                    if (live == 3)
+                    {
+                        Console.WriteLine("Вы использовали все 3 попытки");
+                        Environment.Exit(0);
+                    }
+                    live++;
+                    Console.WriteLine($"У вас осталось {live} попытки из 3");
+
+                    File.WriteAllBytes(args, XorDecrypt(GetHexInByte(NormalDatat)));
+                    goto revers;
+                default: Console.WriteLine("Неверный аргумент"); goto revers;
+            }
+
         }
         static string Hash(string input)
         {
@@ -158,8 +200,8 @@ namespace Figaro
 
             //Regex getLength = new Regex("`~(.*)}");
             //MatchCollection match = getLength.Matches(new string(data));
-
-
+            if(!notone)
+                Lengtharray = data.Length - keyData.Length;
             char[] notmaldata = new char[data.Length - keyData.Length];
             for (int i = 0; i < data.Length - keyData.Length; i++)
                 notmaldata[i] = data[i];

@@ -52,7 +52,7 @@ namespace Figaro
 
             if (args.Length == 0)
             {
-                Console.WriteLine("-ef - Шифрует файл.\n-t - Шифрует строку.\n-td - Дешифрует файл.\n-df - Дешифрует файл.");
+                Console.WriteLine("-ef - Шифрует файл.\n-t - Шифрует строку.\n-td - Дешифрует строку.\n-df - Дешифрует файл.");
                 return;
             }
             try
@@ -75,7 +75,7 @@ namespace Figaro
                     default: Console.WriteLine("Файл не обнаружен или неверный аргумент."); break;
                 }
             }
-            catch (Exception e) { Console.WriteLine("Не удалось найти файл"); Console.WriteLine(e); }
+            catch (Exception e) { Console.WriteLine("Не удалось найти файл или чтото еще"); Console.WriteLine(e); }
 
             //errpass:
             //    Console.Write("Пароль: ");
@@ -151,7 +151,18 @@ namespace Figaro
                 goto errpass;
             }
             Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write("Повторите пароль: ");
 
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.BackgroundColor = ConsoleColor.Black;
+            string correctpass = Console.ReadLine();
+
+            Console.ForegroundColor = ConsoleColor.Gray;
+            if (password != correctpass)
+            {
+                Console.WriteLine("Пароли не совпадают!");
+                goto errpass;
+            }
 
             char[] data = input.ToCharArray();
             char[] keyData = Hash(password).ToCharArray();
@@ -202,19 +213,19 @@ namespace Figaro
             //MatchCollection match = getLength.Matches(new string(data));
             if(!notone)
                 Lengtharray = data.Length - keyData.Length;
-            char[] notmaldata = new char[data.Length - keyData.Length];
+            char[] normaldata = new char[data.Length - keyData.Length];
             for (int i = 0; i < data.Length - keyData.Length; i++)
-                notmaldata[i] = data[i];
-            int getbyte = Encoding.UTF8.GetByteCount(new string(notmaldata));
+                normaldata[i] = data[i];
+            int getbyte = Encoding.UTF8.GetByteCount(new string(normaldata));
 
             int countargs = 0;
             foreach (char i in keyData) if (i == 'H' || i == 'A' || i == '7') countargs++;
 
             if (getbyte <= 256)
             {
-                for (int i = 0; i < notmaldata.Length; i++)
+                for (int i = 0; i < normaldata.Length; i++)
                 {
-                    result[i] = (char)(notmaldata[i] ^ keyData[i % keyData.Length ^ countargs * 8 >> keyData[keyData.Length - 4] ^ keyData[keyData.Length - 9]]);
+                    result[i] = (char)(normaldata[i] ^ keyData[i % keyData.Length ^ countargs * 8 >> keyData[keyData.Length - 4] ^ keyData[keyData.Length - 9]]);
                 }
             }
             else
